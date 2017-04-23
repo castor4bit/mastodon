@@ -1,0 +1,30 @@
+version: 0.1
+
+phases:
+  install:
+    commands:
+      - echo Install started on `date`
+      - apt-get -qq update
+      - apt-get -qq -y install software-properties-common python-software-properties
+      - add-apt-repository -y ppa:ubuntu-toolchain-r/test
+      - add-apt-repository -y ppa:mc3man/trusty-media
+      - apt-get -qq update
+      - apt-get -qq install g++-4.8 ffmpeg
+      - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash
+      - \. $HOME/.nvm/nvm.sh
+      - nvm install latest
+      - npm install -g yarn
+      - bundle install
+      - yarn install
+  pre_build:
+    commands:
+      - bundle exec rails db:create db:migrate
+  build:
+    commands:
+      - echo Build started on `date`
+      - bundle exec rspec
+      - npm test
+      - i18n-tasks unused
+  post_build:
+    commands:
+      - echo Build completed on `date`
